@@ -32,6 +32,7 @@ const Appointment = () => {
       endTime.setDate(today.getDate() + i);
       endTime.setHours(21, 0, 0, 0);
 
+      
       // setting hours
       if (today.getDate() === currentDate.getDate()) {
         currentDate.setHours(
@@ -42,6 +43,7 @@ const Appointment = () => {
         currentDate.setHours(10);
         currentDate.setMinutes(0);
       }
+      
 
       let timeSlots = [];
 
