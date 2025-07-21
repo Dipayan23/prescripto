@@ -1,0 +1,61 @@
+import mongoose from "mongoose";
+
+const doctorSchema = new mongoose.Schema({
+    name: {
+        type: String,
+        required: true,
+    },
+    email: {
+        type: String,
+        required: true,
+        unique: true,
+    },
+    password: {
+        type: String,
+        required: true,
+    },
+    specialization: {
+        type: String,
+        required: true,
+    },
+    experience: {
+        type: Number,
+        required: true,
+    },
+    image: {
+        type: String,
+        required: true,
+    },
+    degree: {
+        type: String,
+        required: true,
+    },
+    fees: {
+        type: Number,
+        required: true,
+    },
+    availability: {
+        type: Boolean,
+        default: true,
+    },
+    date: {
+        type: Date,
+        default: Date.now,
+    },
+    about: {
+        type: String,
+        required: true,
+    },
+    adress: {
+        type: Object,
+        required: true,
+    },
+    slots_booked: {
+        type: Object,
+        default: {},
+    }
+}, {minimize: false});
+
+const doctorModel = mongoose.model("doctors", doctorSchema);
+
+export default doctorModel;
