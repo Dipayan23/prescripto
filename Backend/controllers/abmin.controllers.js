@@ -2,6 +2,7 @@ import validator from "validator";
 import bcrypt from "bcrypt";
 import { v2 as cloudinary } from "cloudinary";
 import doctorModel from "../models/user.models.js";
+import jwt from "jsonwebtoken";
 
 // API for adding a new doctor
 
@@ -44,7 +45,7 @@ const addDoctor = async (req, res) => {
     }
 
     // Validate The password length
-    if (password.length < 6) {
+    if (password.length < 4) {
       return res
         .status(400)
         .json({ message: "Password must be at least 6 characters long" });
@@ -104,4 +105,29 @@ const addDoctor = async (req, res) => {
   }
 };
 
-export { addDoctor };
+// Admin login 
+const loginAdmin = async (req, res) => {
+  try {
+    
+    const { email, password } = req.body;
+    
+    // Check if the email and password is ok or not
+    if(email !== process.env.ADMIN_EMAIL || password !== process.env.ADMIN_PASSWORD) {
+      return res.status(401).json({ message: "Invalid email or password" });
+    }
+
+    // If the credentials are correct, return a success message
+    const token = jwt.sign(email+password, process.env.JWT_SECRET);
+    res.status(200).json({
+      message: "Admin logged in successfully",
+      token: token,
+    });
+
+  }
+  catch (error) {
+    console.error("Error logging in admin:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+export { addDoctor,loginAdmin };
