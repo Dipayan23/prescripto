@@ -4,6 +4,8 @@ import 'dotenv/config';
 import connectDB from './config/mongodb.config.js';
 import connectCloudinary from './config/cloudinary.config.js';
 import adminRouter from './routes/admin.route.js';
+import doctorRouter from './routes/doctor.route.js';
+import userRouter from './routes/user.route.js';
 
 
 // App Config
@@ -34,6 +36,8 @@ app.get('/', (req, res) => {
 
 //Admin Routes
 app.use('/api/admin', adminRouter);
+app.use('/api/doctors', doctorRouter);
+app.use('/api/users', userRouter);
 
 // Start the server
 app.listen(PORT, () => {

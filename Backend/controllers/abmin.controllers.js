@@ -1,7 +1,7 @@
 import validator from "validator";
 import bcrypt from "bcrypt";
 import { v2 as cloudinary } from "cloudinary";
-import doctorModel from "../models/user.models.js";
+import doctorModel from "../models/doctor.models.js";
 import jwt from "jsonwebtoken";
 
 // API for adding a new doctor
@@ -20,8 +20,18 @@ const addDoctor = async (req, res) => {
       address,
     } = req.body;
     const imageFile = req.file;
-    console.log(name, email, password, specialization, experience, about, fees, degree, address, imageFile);
-    
+    console.log(
+      name,
+      email,
+      password,
+      specialization,
+      experience,
+      about,
+      fees,
+      degree,
+      address,
+      imageFile
+    );
 
     // Check if all required fields are provided
     if (
@@ -56,10 +66,9 @@ const addDoctor = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, salt);
 
     // upload image to cloudinary
-    const uploadImage = await cloudinary.uploader.upload(
-      imageFile.path,
-      { resorceType: "image" },
-    );
+    const uploadImage = await cloudinary.uploader.upload(imageFile.path, {
+      resorceType: "image",
+    });
     const imageUrl = uploadImage.secure_url;
 
     // Create a new doctor instance
@@ -68,14 +77,14 @@ const addDoctor = async (req, res) => {
       name,
       email,
       password: hashedPassword,
-      specialization,
-      experience,
+      specialization:specialization,
+      experience: experience,
       image: imageUrl,
-      degree,
-      fees,
-      about,
+      degree: degree,
+      fees: Number(fees),
+      about: about,
       address: JSON.parse(address),
-      date: Date.now()
+      date: Date.now(),
     });
 
     // Save the new doctor to the database
@@ -83,51 +92,68 @@ const addDoctor = async (req, res) => {
 
     // Return the saved doctor data
     res.status(201).json({
-        message: "Doctor added successfully",
-        doctor: {
-            id: savedDoctor._id,
-            name: savedDoctor.name,
-            email: savedDoctor.email,
-            specialization: savedDoctor.specialization,
-            experience: savedDoctor.experience,
-            image: savedDoctor.image,
-            degree: savedDoctor.degree,
-            fees: savedDoctor.fees,
-            about: savedDoctor.about,
-            address: savedDoctor.address,
-        },
-        });
-
-
+      message: "Doctor added successfully",
+      doctor: {
+        id: savedDoctor._id,
+        name: savedDoctor.name,
+        email: savedDoctor.email,
+        specialization: savedDoctor.specialization,
+        experience: savedDoctor.experience,
+        image: savedDoctor.image,
+        degree: savedDoctor.degree,
+        fees: savedDoctor.fees,
+        about: savedDoctor.about,
+        address: savedDoctor.address,
+      },
+    });
   } catch (error) {
     console.error("Error adding doctor:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
 
-// Admin login 
+// Admin login
 const loginAdmin = async (req, res) => {
   try {
-    
     const { email, password } = req.body;
-    
+
     // Check if the email and password is ok or not
-    if(email !== process.env.ADMIN_EMAIL || password !== process.env.ADMIN_PASSWORD) {
+    if (
+      email !== process.env.ADMIN_EMAIL ||
+      password !== process.env.ADMIN_PASSWORD
+    ) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
 
     // If the credentials are correct, return a success message
-    const token = jwt.sign(email+password, process.env.JWT_SECRET);
+    const token = jwt.sign(email + password, process.env.JWT_SECRET);
     res.status(200).json({
       message: "Admin logged in successfully",
       token: token,
     });
-
-  }
-  catch (error) {
+  } catch (error) {
     console.error("Error logging in admin:", error);
     res.status(500).json({ message: "Internal server error" });
   }
-}
+};
 
-export { addDoctor,loginAdmin };
+// API to get all doctors
+
+const getAllDoctors = async (req, res) => {
+  try {
+    const doctors = await doctorModel.find({}).select("-password");
+    if (doctors.length === 0) {
+      return res.status(404).json({ message: "No doctors found" });
+    }
+    //console.log("Doctors retrieved successfully:", doctors);
+    res.status(200).json({
+      message: "Doctors retrieved successfully",
+      doctors: doctors,
+    });
+  } catch (error) {
+    console.error("Error retrieving doctors:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export { addDoctor, loginAdmin, getAllDoctors };

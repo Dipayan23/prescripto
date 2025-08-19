@@ -19,7 +19,7 @@ const doctorSchema = new mongoose.Schema({
         required: true,
     },
     experience: {
-        type: Number,
+        type: String,
         required: true,
     },
     image: {
@@ -46,7 +46,7 @@ const doctorSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    adress: {
+    address: {
         type: Object,
         required: true,
     },

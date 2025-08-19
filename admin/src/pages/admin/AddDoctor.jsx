@@ -51,6 +51,7 @@ const AddDoctor = () => {
         "address",
         JSON.stringify({ line1: address1, line2: address2 })
       );
+      console.log(formData);
 
       const response = await axios.post(
         backendUrl + "/api/admin/add-doctor",
